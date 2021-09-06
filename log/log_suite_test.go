@@ -35,6 +35,17 @@ var _ = Describe("Log", func() {
 
 	buf.Reset()
 
+	Describe("Configure new logger", func() {
+
+		log.Configure("debug", buf, "foo", "bar")
+
+		log.Infof("Test %s", "this")
+
+		fmt.Println(buf.String())
+	})
+
+	buf.Reset()
+
 	Describe("Configure loglevel", func() {
 		log.Reset()
 		log.Configure("error", buf)

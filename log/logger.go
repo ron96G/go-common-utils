@@ -17,7 +17,7 @@ func init() {
 	Root = log.Root()
 }
 
-func Configure(loglevel string, output io.Writer) {
+func Configure(loglevel string, output io.Writer, params ...interface{}) {
 	level, err := log.LvlFromString(strings.ToLower(loglevel))
 	if err != nil {
 		Root.Error("unknown loglevel", "loglevel", loglevel)
@@ -28,6 +28,8 @@ func Configure(loglevel string, output io.Writer) {
 		log.CallerFileHandler(log.DiscardHandler()),
 		log.LvlFilterHandler(level, log.StreamHandler(output, log.LogfmtFormat())),
 	))
+
+	Root = Root.New(params...)
 }
 
 func Reset() {
