@@ -89,7 +89,7 @@ var _ = Describe("Log", func() {
 		ctx := context.Background()
 		ctxLog := log.ToContext(ctx, logger, "ctx", "t")
 
-		LoggerFromCtx := log.FromContext(ctxLog)
+		LoggerFromCtx := log.FromContext(ctxLog.(context.Context))
 
 		LoggerFromCtx.Warn("hello from context")
 		LoggerFromCtx.Warn("hello from context")

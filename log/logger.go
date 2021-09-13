@@ -68,7 +68,7 @@ func New(logger string, ctx ...interface{}) Logger {
 	return Root.New(params...)
 }
 
-func ToContext(ctx context.Context, logger Logger, params ...interface{}) context.Context {
+func ToContext(ctx context.Context, logger Logger, params ...interface{}) interface{} {
 	l := logger.New(params...)
 	return context.WithValue(ctx, logCtxKey, l)
 }
@@ -79,6 +79,10 @@ func FromContext(ctx context.Context) Logger {
 		return Root.New()
 	}
 	return logger
+}
+
+func Trace(msg string, v ...interface{}) {
+	Root.Debug(msg, v...)
 }
 
 func Tracef(format string, v ...interface{}) {
@@ -92,6 +96,10 @@ func Tracef(format string, v ...interface{}) {
 	Root.Debug(message)
 }
 
+func Debug(msg string, v ...interface{}) {
+	Root.Debug(msg, v...)
+}
+
 func Debugf(format string, v ...interface{}) {
 	var message string
 	if len(v) > 0 {
@@ -101,6 +109,10 @@ func Debugf(format string, v ...interface{}) {
 	}
 
 	Root.Debug(message)
+}
+
+func Info(msg string, v ...interface{}) {
+	Root.Info(msg, v...)
 }
 
 func Infof(format string, v ...interface{}) {
