@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"os"
 	"strings"
 
 	log "github.com/ron96G/log15"
@@ -19,6 +18,8 @@ var (
 		"json":   JsonFormat(),
 		"logfmt": LogfmtFormat(),
 	}
+	defaultLoglevel  = log.LvlInfo
+	defaultLogformat = formats["logfmt"]
 )
 
 func init() {
@@ -28,15 +29,15 @@ func init() {
 func Configure(loglevel, format string, output io.Writer, params ...interface{}) {
 	level, err := log.LvlFromString(strings.ToLower(loglevel))
 	if err != nil {
-		Root.Error("unknown loglevel", "loglevel", loglevel)
-		level = log.LvlInfo
+		Root.Crit("unknown loglevel", "loglevel", loglevel)
+		level = defaultLoglevel
 	}
 
 	var frmt log.Format
 	var ok bool
 	if frmt, ok = formats[format]; !ok {
 		Root.Crit("unable to find log format", "format", format)
-		os.Exit(1)
+		frmt = defaultLogformat
 	}
 
 	Root.SetHandler(log.MultiHandler(
