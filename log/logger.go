@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	log "github.com/ron96G/log15"
@@ -14,22 +15,33 @@ type contextKey string
 var (
 	Root      log.Logger
 	logCtxKey contextKey = "logger"
+	formats              = map[string]log.Format{
+		"json":   JsonFormat(),
+		"logfmt": LogfmtFormat(),
+	}
 )
 
 func init() {
 	Root = log.Root()
 }
 
-func Configure(loglevel string, output io.Writer, params ...interface{}) {
+func Configure(loglevel, format string, output io.Writer, params ...interface{}) {
 	level, err := log.LvlFromString(strings.ToLower(loglevel))
 	if err != nil {
 		Root.Error("unknown loglevel", "loglevel", loglevel)
 		level = log.LvlInfo
 	}
 
+	var frmt log.Format
+	var ok bool
+	if frmt, ok = formats[format]; !ok {
+		Root.Crit("unable to find log format", "format", format)
+		os.Exit(1)
+	}
+
 	Root.SetHandler(log.MultiHandler(
 		log.CallerFileHandler(log.DiscardHandler()),
-		log.LvlFilterHandler(level, log.StreamHandler(output, log.LogfmtFormat())),
+		log.LvlFilterHandler(level, log.StreamHandler(output, frmt)),
 	))
 
 	Root = Root.New(params...)

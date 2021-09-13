@@ -24,7 +24,7 @@ var _ = Describe("Log", func() {
 
 		log.Warn("hello world")
 
-		log.Configure("error", buf)
+		log.Configure("error", "logfmt", buf)
 
 		logger := log.New("testlogger")
 
@@ -37,7 +37,7 @@ var _ = Describe("Log", func() {
 
 	Describe("Configure new logger", func() {
 
-		log.Configure("debug", buf, "foo", "bar")
+		log.Configure("debug", "json", buf, "foo", "bar")
 
 		log.Infof("Test %s", "this")
 
@@ -48,7 +48,7 @@ var _ = Describe("Log", func() {
 
 	Describe("Configure loglevel", func() {
 		log.Reset()
-		log.Configure("error", buf)
+		log.Configure("error", "logfmt", buf)
 
 		logger := log.New("testlogger")
 		log.Warn("Warn")
@@ -62,7 +62,7 @@ var _ = Describe("Log", func() {
 
 	Describe("Unknown loglevel", func() {
 		log.Reset()
-		log.Configure("unknown", buf)
+		log.Configure("unknown", "logfmt", buf)
 
 		logger := log.New("testlogger")
 		log.Warn("hello world")
@@ -73,7 +73,7 @@ var _ = Describe("Log", func() {
 
 	Describe("Configure log with params", func() {
 		log.Reset()
-		log.Configure("info", buf)
+		log.Configure("info", "logfmt", buf)
 
 		logger := log.New("testlogger", "foo", "bar")
 		logger.Warn("hello world")
@@ -83,7 +83,7 @@ var _ = Describe("Log", func() {
 
 	Describe("Context logger", func() {
 		log.Reset()
-		log.Configure("info", buf)
+		log.Configure("info", "logfmt", buf)
 		logger := log.New("testlogger", "foo", "bar")
 
 		ctx := context.Background()
