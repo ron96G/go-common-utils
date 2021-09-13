@@ -12,9 +12,10 @@ import (
 type contextKey string
 
 var (
-	Root      log.Logger
-	logCtxKey contextKey = "logger"
-	formats              = map[string]log.Format{
+	Root          log.Logger
+	logCtxKey     contextKey = "logger"
+	loggerNameKey            = "logger"
+	formats                  = map[string]log.Format{
 		"json":   JsonFormat(),
 		"logfmt": LogfmtFormat(),
 	}
@@ -53,7 +54,7 @@ func Reset() {
 }
 
 func New(logger string, ctx ...interface{}) Logger {
-	params := append([]interface{}{logCtxKey, logger}, ctx...)
+	params := append([]interface{}{loggerNameKey, logger}, ctx...)
 	return Root.New(params...)
 }
 
