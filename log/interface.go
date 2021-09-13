@@ -1,7 +1,7 @@
 package log
 
 import (
-	log "github.com/inconshreveable/log15"
+	log "github.com/ron96G/log15"
 )
 
 type Logger interface {

@@ -6,11 +6,14 @@ import (
 	"io"
 	"strings"
 
-	log "github.com/inconshreveable/log15"
+	log "github.com/ron96G/log15"
 )
 
+type contextKey string
+
 var (
-	Root log.Logger
+	Root      log.Logger
+	logCtxKey contextKey = "logger"
 )
 
 func init() {
@@ -37,17 +40,17 @@ func Reset() {
 }
 
 func New(logger string, ctx ...interface{}) Logger {
-	params := append([]interface{}{"logger", logger}, ctx...)
+	params := append([]interface{}{logCtxKey, logger}, ctx...)
 	return Root.New(params...)
 }
 
 func ToContext(ctx context.Context, logger Logger, params ...interface{}) context.Context {
 	l := logger.New(params...)
-	return context.WithValue(ctx, "logger", l)
+	return context.WithValue(ctx, logCtxKey, l)
 }
 
 func FromContext(ctx context.Context) Logger {
-	logger, ok := ctx.Value("logger").(Logger)
+	logger, ok := ctx.Value(logCtxKey).(Logger)
 	if !ok {
 		return Root.New()
 	}
