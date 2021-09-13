@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"time"
 
 	log "github.com/ron96G/log15"
 )
@@ -21,10 +22,15 @@ var (
 	}
 	defaultLoglevel  = log.LvlInfo
 	defaultLogformat = formats["logfmt"]
+
+	TimeFormat = time.RFC3339
+	LevelKey   = "level"
+	TimeKey    = "time"
+	MsgKey     = "message"
 )
 
 func init() {
-	Root = log.Root()
+	Reset()
 }
 
 func Configure(loglevel, format string, output io.Writer, params ...interface{}) {
@@ -50,6 +56,10 @@ func Configure(loglevel, format string, output io.Writer, params ...interface{})
 }
 
 func Reset() {
+	log.TimeFormat = TimeFormat
+	log.TimeKey = TimeKey
+	log.LvlKey = LevelKey
+	log.MsgKey = MsgKey
 	Root = log.Root()
 }
 

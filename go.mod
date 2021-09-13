@@ -8,6 +8,6 @@ require (
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/onsi/ginkgo v1.16.4
 	github.com/onsi/gomega v1.16.0
-	github.com/ron96G/log15 v2.15.3+incompatible
+	github.com/ron96G/log15 v2.15.6+incompatible
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
 )
