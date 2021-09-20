@@ -94,9 +94,12 @@ func LoggerWithConfig(h fasthttp.RequestHandler, config LoggerConfig) fasthttp.R
 					b = b[1 : len(b)-1]
 					return buf.Write(b)
 				}
-			case "latency":
+			case "latency_sec":
 				l := stop.Sub(start)
 				return buf.WriteString(strconv.FormatFloat(float64(l)/float64(time.Second), 'f', 4, 64))
+			case "latency":
+				l := stop.Sub(start)
+				return buf.WriteString(strconv.FormatInt(int64(l), 10))
 			case "latency_human":
 				return buf.WriteString(stop.Sub(start).String())
 			case "bytes_in":
