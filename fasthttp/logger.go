@@ -47,9 +47,10 @@ func LoggerWithConfig(h fasthttp.RequestHandler, config LoggerConfig) fasthttp.R
 	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
 		var err error
 		start := time.Now()
+		h(ctx)
+
 		req := ctx.Request
 		res := ctx.Response
-		h(ctx)
 		stop := time.Now()
 		buf := config.pool.Get().(*bytes.Buffer)
 		buf.Reset()
