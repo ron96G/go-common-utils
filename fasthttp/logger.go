@@ -61,7 +61,7 @@ func LoggerWithConfig(h fasthttp.RequestHandler, config LoggerConfig) fasthttp.R
 				return buf.WriteString(time.Now().Format(config.TimeFormat))
 			case "id":
 				id := req.Header.Peek(requestIDHeader)
-				if id == nil {
+				if len(id) == 0 {
 					id = res.Header.Peek(requestIDHeader)
 				}
 				return buf.Write(id)
