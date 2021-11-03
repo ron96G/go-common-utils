@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -32,18 +33,26 @@ type LoggerConfig struct {
 
 	template *fasttemplate.Template
 	pool     *sync.Pool
-	envCache map[string][]byte
 }
 
 func LoggerWithConfig(h fasthttp.RequestHandler, config LoggerConfig) fasthttp.RequestHandler {
 
-	config.template = fasttemplate.New(config.Format, "${", "}")
+	r := regexp.MustCompile(`\$\{env:[A-Za-z-_]+\}`)
+	parsedFormat := r.ReplaceAllStringFunc(config.Format, func(s string) string {
+		val := os.Getenv(s[4:])
+		if val == "" {
+			val = "-"
+		}
+		return val
+	})
+
+	config.template = fasttemplate.New(parsedFormat, "${", "}")
 	config.pool = &sync.Pool{
 		New: func() interface{} {
 			return bytes.NewBuffer(make([]byte, 256))
 		},
 	}
-	config.envCache = map[string][]byte{}
+
 	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
 		var err error
 		start := time.Now()
@@ -115,14 +124,6 @@ func LoggerWithConfig(h fasthttp.RequestHandler, config LoggerConfig) fasthttp.R
 				switch {
 				case strings.HasPrefix(tag, "header:"):
 					return buf.Write(req.Header.Peek(tag[7:]))
-				case strings.HasPrefix(tag, "env:"):
-					val, found := config.envCache[tag[4:]]
-					if found {
-						return buf.Write(val)
-					}
-					val = []byte(os.Getenv(tag[4:]))
-					config.envCache[tag[4:]] = val
-					return buf.Write(val)
 				}
 			}
 			return 0, nil
