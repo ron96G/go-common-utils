@@ -39,7 +39,7 @@ func LoggerWithConfig(h fasthttp.RequestHandler, config LoggerConfig) fasthttp.R
 
 	r := regexp.MustCompile(`\$\{env:[A-Za-z-_]+\}`)
 	parsedFormat := r.ReplaceAllStringFunc(config.Format, func(s string) string {
-		val := os.Getenv(s[4:])
+		val := os.Getenv(s[6 : len(s)-1])
 		if val == "" {
 			val = "-"
 		}
