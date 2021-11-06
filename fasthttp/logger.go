@@ -24,13 +24,17 @@ const (
 	requestIDHeader = "X-Request-ID"
 )
 
+type SkipperFunc func(ctx *fasthttp.RequestCtx) bool
+
 type LoggerConfig struct {
-	Format string `yaml:"format"`
-
+	Format     string `yaml:"format"`
 	TimeFormat string `yaml:"time_format"`
-
-	Output io.Writer
-
+	/* 	Skip the logging of the request.
+	The function is evaluated after the next handler was called.
+	Thus the function can inspect the request and the response.
+	The function must return true to skip the logging of the request. */
+	Skipper  SkipperFunc
+	Output   io.Writer
 	template *fasttemplate.Template
 	pool     *sync.Pool
 }
@@ -46,6 +50,14 @@ func LoggerWithConfig(h fasthttp.RequestHandler, config LoggerConfig) fasthttp.R
 		return val
 	})
 
+	if config.Skipper == nil {
+		config.Skipper = DefaultSkipper
+	}
+
+	if config.Output == nil {
+		config.Output = os.Stdout
+	}
+
 	config.template = fasttemplate.New(parsedFormat, "${", "}")
 	config.pool = &sync.Pool{
 		New: func() interface{} {
@@ -57,6 +69,10 @@ func LoggerWithConfig(h fasthttp.RequestHandler, config LoggerConfig) fasthttp.R
 		var err error
 		start := time.Now()
 		h(ctx)
+
+		if config.Skipper(ctx) {
+			return
+		}
 
 		req := ctx.Request
 		res := ctx.Response
@@ -133,4 +149,8 @@ func LoggerWithConfig(h fasthttp.RequestHandler, config LoggerConfig) fasthttp.R
 
 		_, err = config.Output.Write(buf.Bytes())
 	})
+}
+
+func DefaultSkipper(ctx *fasthttp.RequestCtx) bool {
+	return false
 }
