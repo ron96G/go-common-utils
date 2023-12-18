@@ -11,5 +11,5 @@ require (
 	github.com/ron96G/log15 v2.15.6+incompatible
 	github.com/valyala/fasthttp v1.30.0
 	github.com/valyala/fasttemplate v1.2.1
-	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
+	golang.org/x/crypto v0.17.0
 )
